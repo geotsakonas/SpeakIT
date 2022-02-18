@@ -1,0 +1,41 @@
+.logo{padding-bottom: 0; margin-bottom: 0;}
+
+.mic-btn{border: 3px solid #0b92ac; border-radius: 100%; padding: 44px; min-height: 90px; max-width: 90px;}
+
+.file-btn{border: 3px solid #FF652F; border-radius: 100%; padding: 44px; min-height: 90px; max-width: 90px;}
+
+.mic-btn:hover, .file-btn:hover{cursor: pointer; outline:none}
+
+.fa-microphone { color: #0b92ac; font-size: 35px; transition: all .25s ease-in-out; left: 50%; top: 50%; transform: translate(-50%,-50%); outline:none}
+
+.fa-microphone:hover { color: #0eb6d8; font-size: 45px; cursor: pointer; outline:none;}
+
+.box-microphone{ background:#0b92ac33!important; }
+
+.fa-file-audio { color: #FF7a6b; font-size: 35px; transition: all .25s ease-in-out; left: 50%; top: 50%; transform: translate(-50%,-50%);  outline:none}
+
+.fa-file-audio:hover { font-size: 45px; cursor: pointer; color: #d44916;  outline:none}
+
+.box-file-audio{background:#ffe2a680!important;}
+
+.output-display { min-height: 250px; border: 1px solid; }
+
+.fas, .fa { cursor: none; }
+
+.brand-color{color: #0b92ac; font-weight: 800;}
+
+.background { color:#494440; background-color: #ffffff;}
+
+.sp-box{transition: all .2s ease-in-out;}
+
+.header-container {margin: 0; padding: 0; width: 100%; background: #f0f0f0}
+
+.logo-container {padding: 1em;}
+
+.color-text-title{color:#494440; font-size: larger; padding: 0.5em; text-align:center; font-weight:bold;}
+
+.color-text-description{color:#494440; padding: 0.5em;}
+
+.no-underline{color:#494440; text-decoration: none; text-align: right;}
+
+.bottom-sign{text-align: right;}
