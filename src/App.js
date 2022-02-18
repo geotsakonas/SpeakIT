@@ -3,16 +3,15 @@ import { Container } from 'reactstrap';
 import { getTokenOrRefresh } from './token_util';
 import './custom.css'
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
-​
+
 import data from './data.js';
-​
+
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
-​
-​
+
 export default class App extends Component {
     constructor(props) {
         super(props);
-​
+        
         this.state = {
             displayText: 'To start press one the buttons above!',
             res: []
@@ -28,7 +27,7 @@ export default class App extends Component {
             });
         }
     }
-​
+    
     async sttFromMic() {
         const tokenObj = await getTokenOrRefresh();
         const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
@@ -36,7 +35,7 @@ export default class App extends Component {
         
         const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
         const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-​
+        
         this.setState({
             displayText: 'Speak into your microphone'
         });
