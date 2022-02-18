@@ -39,7 +39,7 @@ export default class App extends Component {
         this.setState({
             displayText: 'Speak into your microphone'
         });
-​
+        
         recognizer.recognizeOnceAsync(result => {
             let displayText = "";
             let res = [];
@@ -74,7 +74,7 @@ export default class App extends Component {
                         }
                     }
                 }
-​
+
                 if (res.length === 0) {
                     synthesizer.speakTextAsync(
                         "No match was found. All the suggested applications are",
@@ -112,7 +112,7 @@ export default class App extends Component {
             } else {
                 displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
             }
-​
+
             synthesizer.speakTextAsync(
                 displayText,
                 result => {
@@ -123,35 +123,35 @@ export default class App extends Component {
                 console.log(error);
                 synthesizer.close();
             });
-​
+
             this.setState({
                 displayText: displayText,
                 res: res
             });
         });
     }
-​
+
     async fileChange(event) {
         const audioFile = event.target.files[0];
         console.log(audioFile);
         const fileInfo = audioFile.name + ` size=${audioFile.size} bytes `;
-​
+
         this.setState({
             displayText: fileInfo
         });
-​
+
         const tokenObj = await getTokenOrRefresh();
         const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
         speechConfig.speechRecognitionLanguage = 'en-US';
-​
+
         const audioConfig = speechsdk.AudioConfig.fromWavFileInput(audioFile);
         const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-​
+
         recognizer.recognizeOnceAsync(result => {
             let displayText;
             let res = [];
             const synthesizer = new speechsdk.SpeechSynthesizer(speechConfig);
-​
+
             if (result.reason === ResultReason.RecognizedSpeech) {
                 // displayText = `RECOGNIZED: Text=${result.text}`
                 for (const tool of data) {
@@ -182,7 +182,7 @@ export default class App extends Component {
                         }
                     }
                 }
-​
+
                 if (res.length === 0) {
                     synthesizer.speakTextAsync(
                         "No match was found. All the suggested applications are",
@@ -217,7 +217,7 @@ export default class App extends Component {
                         });
                     }
                 }
-​
+
             } else {
                 displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
             }
@@ -232,14 +232,14 @@ export default class App extends Component {
                 console.log(error);
                 synthesizer.close();
             });
-​
+
             this.setState({
                 displayText: fileInfo + displayText,
                 res: res
             });
         });
     }
-​
+    
     render() {
         return (
             <Container className="app-container">
