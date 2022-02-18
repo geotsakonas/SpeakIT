@@ -3,16 +3,16 @@ import { Container } from 'reactstrap';
 import { getTokenOrRefresh } from './token_util';
 import './custom.css'
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
-
+​
 import data from './data.js';
-
+​
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
-
-
+​
+​
 export default class App extends Component {
     constructor(props) {
         super(props);
-
+​
         this.state = {
             displayText: 'To start press one the buttons above!',
             res: []
@@ -28,7 +28,7 @@ export default class App extends Component {
             });
         }
     }
-
+​
     async sttFromMic() {
         const tokenObj = await getTokenOrRefresh();
         const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
@@ -36,11 +36,11 @@ export default class App extends Component {
         
         const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
         const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-
+​
         this.setState({
             displayText: 'Speak into your microphone'
         });
-
+​
         recognizer.recognizeOnceAsync(result => {
             let displayText = "";
             let res = [];
@@ -75,7 +75,7 @@ export default class App extends Component {
                         }
                     }
                 }
-
+​
                 if (res.length === 0) {
                     synthesizer.speakTextAsync(
                         "No match was found. All the suggested applications are",
@@ -113,7 +113,7 @@ export default class App extends Component {
             } else {
                 displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
             }
-
+​
             synthesizer.speakTextAsync(
                 displayText,
                 result => {
@@ -124,46 +124,123 @@ export default class App extends Component {
                 console.log(error);
                 synthesizer.close();
             });
-
+​
             this.setState({
                 displayText: displayText,
                 res: res
             });
         });
     }
-
+​
     async fileChange(event) {
         const audioFile = event.target.files[0];
         console.log(audioFile);
         const fileInfo = audioFile.name + ` size=${audioFile.size} bytes `;
-
+​
         this.setState({
             displayText: fileInfo
         });
-
+​
         const tokenObj = await getTokenOrRefresh();
         const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
         speechConfig.speechRecognitionLanguage = 'en-US';
-
+​
         const audioConfig = speechsdk.AudioConfig.fromWavFileInput(audioFile);
         const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-
+​
         recognizer.recognizeOnceAsync(result => {
             let displayText;
+            let res = [];
+            const synthesizer = new speechsdk.SpeechSynthesizer(speechConfig);
+​
             if (result.reason === ResultReason.RecognizedSpeech) {
-                displayText = `RECOGNIZED: Text=${result.text}`
-    
-
+                // displayText = `RECOGNIZED: Text=${result.text}`
+                for (const tool of data) {
+                    for (const keyword of tool.keywords) {
+                        if(result.text.includes(keyword)) {
+                            synthesizer.speakTextAsync(
+                                tool.toolName,
+                                result => {
+                                return result.audioData;
+                            },
+                                error => {
+                                console.log(error);
+                                synthesizer.close();
+                            });
+                            
+                            synthesizer.speakTextAsync(
+                                tool.description,
+                                result => {
+                                return result.audioData;
+                            },
+                                error => {
+                                console.log(error);
+                                synthesizer.close();
+                            });
+                            
+                            res.push([tool.toolName, tool.description, tool.link]);
+                            break;
+                        }
+                    }
+                }
+​
+                if (res.length === 0) {
+                    synthesizer.speakTextAsync(
+                        "No match was found. All the suggested applications are",
+                        result => {
+                        return result.audioData;
+                    },
+                        error => {
+                        console.log(error);
+                        synthesizer.close();
+                    });
+                    
+                    for (const tool of data) {
+                        res.push([tool.toolName, tool.description]);
+                        synthesizer.speakTextAsync(
+                            tool.toolName,
+                            result => {
+                            return result.audioData;
+                        },
+                            error => {
+                            console.log(error);
+                            synthesizer.close();
+                        });
+                        
+                        synthesizer.speakTextAsync(
+                            tool.description,
+                            result => {
+                            return result.audioData;
+                        },
+                            error => {
+                            console.log(error);
+                            synthesizer.close();
+                        });
+                    }
+                }
+​
             } else {
                 displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
             }
-
+            
+            synthesizer.speakTextAsync(
+                displayText,
+                result => {
+                synthesizer.close();
+                return result.audioData;
+            },
+                error => {
+                console.log(error);
+                synthesizer.close();
+            });
+​
             this.setState({
-                displayText: fileInfo + displayText
+                displayText: fileInfo + displayText,
+                res: res
             });
         });
     }
-
+​
     render() {
         return (
             <Container className="app-container">
